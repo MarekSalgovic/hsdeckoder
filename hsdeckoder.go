@@ -106,7 +106,7 @@ func parseBody(bs []byte, d Deck) (Deck, error) {
 	cards = append(cards, singleCopy...)
 	cards = append(cards, doubleCopy...)
 	var heroes []int
-	for i:=0;i<len(heroes);i++{
+	for i:=0;i<len(heroCopy);i++{
 		heroes = append(heroes, heroCopy[i].Id)
 	}
 	d.Heroes = heroes
