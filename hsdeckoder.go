@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
+	"fmt"
 )
 
 type Format int
@@ -19,7 +20,6 @@ type Deck struct {
 	Heroes	[]int
 	Cards 	[]Card
 }
-
 
 
 const (
@@ -69,6 +69,13 @@ func parseHeader(bs []byte) ([]byte, Format, error) {
 	return bs, Format(format), nil
 }
 
+/*
+func parseNCopyCards(bs []byte) ([]byte, []Card, error) {
+	var cards []Card
+	uniqueCount, c := binary.Uvarint(bs)
+} */
+
+
 
 func parseBodyHelper(bs []byte, count int) ([]byte, []Card, error){
 	var cards []Card
@@ -90,25 +97,32 @@ func parseBodyHelper(bs []byte, count int) ([]byte, []Card, error){
 
 
 func parseBody(bs []byte, d Deck) (Deck, error) {
+	fmt.Printf("After header %d", len(bs))
 	bs, heroCopy, err := parseBodyHelper(bs,0)
+	fmt.Printf("After hero %d", len(bs))
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
+
 	bs, singleCopy, err := parseBodyHelper(bs, 1)
+	fmt.Printf("After single copy %d", len(bs))
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
 	bs, doubleCopy, err := parseBodyHelper(bs,2)
+	fmt.Printf("After double copy %d", len(bs))
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
+	var heroes []int
+	for _, hero:= range heroCopy{
+		heroes = append(heroes, hero.Id)
+	}
+
 	var cards []Card
 	cards = append(cards, singleCopy...)
 	cards = append(cards, doubleCopy...)
-	var heroes []int
-	for i:=0;i<len(heroCopy);i++{
-		heroes = append(heroes, heroCopy[i].Id)
-	}
+	fmt.Println(len(bs))
 	d.Heroes = heroes
 	d.Cards = cards
 	return d, nil
