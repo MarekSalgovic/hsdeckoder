@@ -70,19 +70,19 @@ func parseHeader(bs []byte) ([]byte, Format, error) {
 }
 
 
-func parseBodyHelper(bs []byte) ([]byte, []int, error){
-	var cards []int
+func parseBodyHelper(bs []byte, count int) ([]byte, []Card, error){
+	var cards []Card
 	uniqueCount, c := binary.Uvarint(bs)
 	if uniqueCount == 0 && c <= 0 {
-		return bs, []int{}, ErrInvalidCode
+		return bs, []Card{}, ErrInvalidCode
 	}
 	bs = bs[c:]
 	for i := uint64(0); i < uniqueCount; i++ {
 		card, c := binary.Uvarint(bs)
 		if card == 0 && c <= 0 {
-			return bs, []int{}, ErrInvalidCode
+			return bs, []Card{}, ErrInvalidCode
 		}
-		cards = append(cards, int(card))
+		cards = append(cards, Card{Id: int(card), Count: count})
 		bs = bs[c:]
 	}
 	return bs, cards, nil
@@ -90,27 +90,24 @@ func parseBodyHelper(bs []byte) ([]byte, []int, error){
 
 
 func parseBody(bs []byte, d Deck) (Deck, error) {
-	bs, heroes, err := parseBodyHelper(bs)
+	bs, heroCopy, err := parseBodyHelper(bs,0)
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
-	bs, singleCopy, err := parseBodyHelper(bs)
+	bs, singleCopy, err := parseBodyHelper(bs, 1)
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
-	bs, doubleCopy, err := parseBodyHelper(bs)
+	bs, doubleCopy, err := parseBodyHelper(bs,2)
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
 	var cards []Card
-	var card Card
-	for i:=0;i<len(singleCopy);i++{
-		card = Card{Id:singleCopy[i], Count: 1}
-		cards = append(cards, card)
-	}
-	for i:=0;i<len(doubleCopy);i++{
-		card = Card{Id:doubleCopy[i], Count: 2}
-		cards = append(cards, card)
+	cards = append(cards, singleCopy...)
+	cards = append(cards, doubleCopy...)
+	var heroes []int
+	for i:=0;i<len(heroes);i++{
+		heroes = append(heroes, heroCopy[i].Id)
 	}
 	d.Heroes = heroes
 	d.Cards = cards
