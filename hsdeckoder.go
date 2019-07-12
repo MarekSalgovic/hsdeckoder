@@ -113,6 +113,7 @@ func parseBody(bs []byte, d Deck) (Deck, error) {
 		cards = append(cards, card)
 	}
 	d.Heroes = heroes
+	d.Cards = cards
 	return d, nil
 }
 
