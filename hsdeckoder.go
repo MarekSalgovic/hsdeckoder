@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
-	"fmt"
 )
 
 type Format int
@@ -31,7 +30,7 @@ const (
 
 
 var (
-	ErrInvalidCode = errors.New("Deckcode invalid")
+	ErrInvalidCode = errors.New("deckcode invalid")
 )
 
 
@@ -107,12 +106,9 @@ func parseBody(bs []byte, d Deck) (Deck, error) {
 	cards = append(cards, singleCopy...)
 	cards = append(cards, doubleCopy...)
 	var heroes []int
-	fmt.Println(heroCopy)
 	for i:=0;i<len(heroCopy);i++{
 		heroes = append(heroes, heroCopy[i].Id)
-		fmt.Println(heroCopy[i].Id)
 	}
-	fmt.Println(heroes)
 	d.Heroes = heroes
 	d.Cards = cards
 	return d, nil
