@@ -69,11 +69,25 @@ func parseHeader(bs []byte) ([]byte, Format, error) {
 	return bs, Format(format), nil
 }
 
-/*
+
 func parseNCopyCards(bs []byte) ([]byte, []Card, error) {
+	byteRemainder := len(bs)
 	var cards []Card
-	uniqueCount, c := binary.Uvarint(bs)
-} */
+	for byteRemainder<=0{
+		cardId, c := binary.Uvarint(bs)
+		if cardId == 0 && c <= 0 {
+			return bs, []Card{}, ErrInvalidCode
+		}
+		byteRemainder -= c
+		cardCount, c := binary.Uvarint(bs)
+		if cardCount == 0 && c <= 0 {
+			return bs, []Card{}, ErrInvalidCode
+		}
+		cards = append(cards, Card{Id: int(cardId), Count: int(cardCount)})
+	}
+	return bs, cards, nil
+
+}
 
 
 
@@ -97,20 +111,24 @@ func parseBodyHelper(bs []byte, count int) ([]byte, []Card, error){
 
 
 func parseBody(bs []byte, d Deck) (Deck, error) {
-	fmt.Printf("After header %d", len(bs))
+
 	bs, heroCopy, err := parseBodyHelper(bs,0)
-	fmt.Printf("After hero %d", len(bs))
+
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
 
 	bs, singleCopy, err := parseBodyHelper(bs, 1)
-	fmt.Printf("After single copy %d", len(bs))
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
 	bs, doubleCopy, err := parseBodyHelper(bs,2)
-	fmt.Printf("After double copy %d", len(bs))
+
+	if err != nil{
+		return Deck{},ErrInvalidCode
+	}
+	bs, nCopy, err := parseNCopyCards(bs)
+
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
@@ -122,6 +140,7 @@ func parseBody(bs []byte, d Deck) (Deck, error) {
 	var cards []Card
 	cards = append(cards, singleCopy...)
 	cards = append(cards, doubleCopy...)
+	cards = append(cards, nCopy...)
 	fmt.Println(len(bs))
 	d.Heroes = heroes
 	d.Cards = cards
