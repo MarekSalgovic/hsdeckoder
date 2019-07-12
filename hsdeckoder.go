@@ -7,13 +7,17 @@ import (
 )
 
 type Format int
-type Hero int
+
+type Card struct {
+	Id int
+	Count int
+}
+
 
 type Deck struct {
-	Format     Format
-	Heroes     []int
-	SingleCopy []int
-	DoubleCopy []int
+	Format	Format
+	Heroes	[]int
+	Cards 	[]Card
 }
 
 
@@ -98,9 +102,19 @@ func parseBody(bs []byte, d Deck) (Deck, error) {
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
+	var cards []Card
+	var card Card
+	for i:=0;i<len(singleCopy);i++{
+		card.Id = singleCopy[i]
+		card.Count = 1
+		cards = append(cards, card)
+	}
+	for i:=0;i<len(doubleCopy);i++{
+		card.Id = doubleCopy[i]
+		card.Count = 1
+		cards = append(cards, card)
+	}
 	d.Heroes = heroes
-	d.SingleCopy = singleCopy
-	d.DoubleCopy = doubleCopy
 	return d, nil
 }
 
