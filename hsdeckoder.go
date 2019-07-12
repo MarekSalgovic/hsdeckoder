@@ -11,7 +11,7 @@ type Hero int
 
 type Deck struct {
 	Format     Format
-	Heroes     Hero
+	Heroes     []int
 	SingleCopy []int
 	DoubleCopy []int
 }
@@ -24,17 +24,6 @@ const (
 	FMT_STANDART Format = 2
 )
 
-const (
-	HERO_MALFURION Hero = 274
-	HERO_REXXAR    Hero = 1
-	HERO_JAINA     Hero = 637
-	HERO_UTHER     Hero = 671
-	HERO_ANDUIN    Hero = 813
-	HERO_VALEERA   Hero = 930
-	HERO_THRALL    Hero = 1066
-	HERO_GULDAN    Hero = 893
-	HERO_GARROSH   Hero = 7
-)
 
 var (
 	ErrInvalidCode = errors.New("Deckcode invalid")
@@ -97,7 +86,7 @@ func parseBodyHelper(bs []byte) ([]byte, []int, error){
 
 
 func parseBody(bs []byte, d Deck) (Deck, error) {
-	bs, hero, err := parseBodyHelper(bs)
+	bs, heroes, err := parseBodyHelper(bs)
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
@@ -109,7 +98,7 @@ func parseBody(bs []byte, d Deck) (Deck, error) {
 	if err != nil{
 		return Deck{},ErrInvalidCode
 	}
-	d.Heroes = Hero(hero[0])
+	d.Heroes = heroes
 	d.SingleCopy = singleCopy
 	d.DoubleCopy = doubleCopy
 	return d, nil
