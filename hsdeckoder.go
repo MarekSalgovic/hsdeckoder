@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
-	"fmt"
 )
 
 type Format int
@@ -141,7 +140,6 @@ func parseBody(bs []byte, d Deck) (Deck, error) {
 	cards = append(cards, singleCopy...)
 	cards = append(cards, doubleCopy...)
 	cards = append(cards, nCopy...)
-	fmt.Println(len(bs))
 	d.Heroes = heroes
 	d.Cards = cards
 	return d, nil
