@@ -54,6 +54,9 @@ const (
 	WARRIOR Class = "WARRIOR"
 )
 
+const (
+	deckSize = 30
+)
 
 const (
 	apiURL = "https://api.hearthstonejson.com/v1/31532/enUS/cards.json"
@@ -69,7 +72,7 @@ var (
 )
 
 
-func StripCard(card CardAPI) CardStripped{
+func stripCard(card CardAPI) CardStripped{
 	return CardStripped{
 		Id:        card.Id,
 		DbfId:     card.DbfId,
@@ -134,14 +137,14 @@ func readDB() ([]CardStripped, error){
 
 
 
-func GetClass(deck hsdeckoder.Deck) (Class, error){
-	heroCard, err := GetCard(deck.Heroes[0])
+func getClass(deck hsdeckoder.Deck) (Class, error){
+	heroCard, err := getCard(deck.Heroes[0])
 	if err != nil{
 		return Class(""), err
 	}
 	class := heroCard.CardClass
 	for _, id := range deck.Cards{
-		card, err := GetCard(id.Id)
+		card, err := getCard(id.Id)
 		if err != nil{
 			return Class(""), err
 		}
@@ -153,7 +156,7 @@ func GetClass(deck hsdeckoder.Deck) (Class, error){
 
 }
 
-func GetCard(dbfId int) (CardStripped, error){
+func getCard(dbfId int) (CardStripped, error){
 	cards, err := readDB()
 	if err != nil{
 		return CardStripped{}, nil
@@ -166,6 +169,24 @@ func GetCard(dbfId int) (CardStripped, error){
 	return CardStripped{}, ErrCardNotFound
 }
 
+
+func Validate(deck hsdeckoder.Deck) (Class, error){
+	if len(deck.Heroes) != 1{
+		return Class(""), ErrInvalidDeck
+	}
+	class, err := getClass(deck)
+	if err != nil{
+		return Class(""), err
+	}
+	var cardCount int
+	for _, card := range deck.Cards{
+		cardCount += card.Count
+	}
+	if cardCount != deckSize{
+		return Class(""), ErrInvalidDeck
+	}
+	return class, nil
+}
 
 
 
