@@ -23,3 +23,17 @@ const (
 	FMT_STANDART Format = 2
 )
 
+type Class string
+
+const (
+	NEUTRAL Class = "NEUTRAL"
+	DRUID Class = "DRUID"
+	HUNTER Class = "HUNTER"
+	MAGE Class = "MAGE"
+	PALADIN Class = "PALADIN"
+	PRIEST Class = "PRIEST"
+	ROGUE Class = "ROGUE"
+	SHAMAN Class = "SHAMAN"
+	WARLOCK Class = "WARLOCK"
+	WARRIOR Class = "WARRIOR"
+)

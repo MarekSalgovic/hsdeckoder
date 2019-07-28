@@ -27,7 +27,7 @@ func stripCard(card CardAPI) CardStripped{
 		Id:        card.Id,
 		DbfId:     card.DbfId,
 		Name:      card.Name,
-		CardClass: Class(card.CardClass),
+		CardClass: hsdeckoder.Class(card.CardClass),
 		Cost:      card.Cost,
 	}
 }
@@ -87,19 +87,19 @@ func readDB() ([]CardStripped, error){
 
 
 
-func getClass(deck hsdeckoder.Deck) (Class, error){
+func getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error){
 	heroCard, err := getCard(deck.Heroes[0])
 	if err != nil{
-		return Class(""), err
+		return hsdeckoder.Class(""), err
 	}
 	class := heroCard.CardClass
 	for _, id := range deck.Cards{
 		card, err := getCard(id.Id)
 		if err != nil{
-			return Class(""), err
+			return hsdeckoder.Class(""), err
 		}
-		if card.CardClass != NEUTRAL && card.CardClass != class{
-			return Class(""), ErrInvalidDeck
+		if card.CardClass != hsdeckoder.NEUTRAL && card.CardClass != class{
+			return hsdeckoder.Class(""), ErrInvalidDeck
 		}
 	}
 	return class, nil
@@ -120,28 +120,19 @@ func getCard(dbfId int) (CardStripped, error){
 }
 
 
-func Validate(deck hsdeckoder.Deck) (Class, error){
+func Validate(deck hsdeckoder.Deck) (ParsedDeck, error){
+	var parsedDeck ParsedDeck
 	if len(deck.Heroes) != 1{
-		return Class(""), ErrInvalidDeck
+		return ParsedDeck{}, ErrInvalidDeck
 	}
 	class, err := getClass(deck)
 	if err != nil{
-		return Class(""), err
+		return ParsedDeck{}, err
 	}
+	parsedDeck.Class = class
 	var cardCount int
 	for _, card := range deck.Cards{
 		cardCount += card.Count
-	}
-	if cardCount != deckSize{
-		return Class(""), ErrInvalidDeck
-	}
-	return class, nil
-}
-
-
-func Parse(deck hsdeckoder.Deck) (ParsedDeck, error){
-	var parsedDeck ParsedDeck
-	for _, card := range deck.Cards{
 		strippedCard, err := getCard(card.Id)
 		if err != nil{
 			return ParsedDeck{}, err
@@ -153,6 +144,9 @@ func Parse(deck hsdeckoder.Deck) (ParsedDeck, error){
 			Cost: strippedCard.Cost,
 		}
 		parsedDeck.Cards = append(parsedDeck.Cards, parsedCard)
+	}
+	if cardCount != deckSize{
+		return ParsedDeck{}, ErrInvalidDeck
 	}
 	return parsedDeck, nil
 }

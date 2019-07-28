@@ -1,5 +1,6 @@
 package validator
 
+import "github.com/MarekSalgovic/hsdeckoder"
 
 type CardAPI struct {
 	Id          string   `json:"id"`
@@ -25,12 +26,13 @@ type CardStripped struct {
 	Id          string   `json:"id"`
 	DbfId       int      `json:"dbfId"`
 	Name        string   `json:"name"`
-	CardClass   Class    `json:"cardClass"`
+	CardClass   hsdeckoder.Class    `json:"cardClass"`
 	Cost        int      `json:"cost"`
 }
 
 
 type ParsedDeck struct{
+	Class hsdeckoder.Class
 	Cards []ParsedCard `json:"card"`
 }
 
@@ -42,17 +44,3 @@ type ParsedCard struct{
 }
 
 
-type Class string
-
-const (
-	NEUTRAL Class = "NEUTRAL"
-	DRUID Class = "DRUID"
-	HUNTER Class = "HUNTER"
-	MAGE Class = "MAGE"
-	PALADIN Class = "PALADIN"
-	PRIEST Class = "PRIEST"
-	ROGUE Class = "ROGUE"
-	SHAMAN Class = "SHAMAN"
-	WARLOCK Class = "WARLOCK"
-	WARRIOR Class = "WARRIOR"
-)
