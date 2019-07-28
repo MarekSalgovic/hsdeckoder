@@ -38,6 +38,7 @@ type ParsedCard struct{
 	Id string `json:"id"`
 	Name string `json:"name"`
 	Count int `json:"count"`
+	Cost int `json:"cost"`
 }
 
 

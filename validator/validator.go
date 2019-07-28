@@ -150,6 +150,7 @@ func Parse(deck hsdeckoder.Deck) (ParsedDeck, error){
 			Id:    strippedCard.Id,
 			Name:  strippedCard.Name,
 			Count: card.Count,
+			Cost: strippedCard.Cost,
 		}
 		parsedDeck.Cards = append(parsedDeck.Cards, parsedCard)
 	}
