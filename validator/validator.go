@@ -2,57 +2,13 @@ package validator
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/MarekSalgovic/hsdeckoder"
 	"io/ioutil"
 	"net/http"
 	"os"
 )
 
-type CardAPI struct {
-	Id          string   `json:"id"`
-	DbfId       int      `json:"dbfId"`
-	Name        string   `json:"name"`
-	Text        string   `json:"text"`
-	Flavor      string	 `json:"flavor"`
-	Artist      string   `json:"artist"`
-	Attack      int  	 `json:"attack"`
-	CardClass   string   `json:"cardClass"`
-	Collectible bool  	 `json:"collectible"`
-	Cost        int      `json:"cost"`
-	Elite       bool     `json:"elite"`
-	Faction     string   `json:"faction"`
-	Health      int      `json:"health"`
-	Mechanics   []string `json:"mechanics"`
-	Rarity		string	 `json:"rarity"`
-	Set			string	 `json:"set"`
-	Type		string	 `json:"type"`
-}
 
-type CardStripped struct {
-	Id          string   `json:"id"`
-	DbfId       int      `json:"dbfId"`
-	Name        string   `json:"name"`
-	CardClass   Class    `json:"cardClass"`
-	Cost        int      `json:"cost"`
-}
-
-
-
-type Class string
-
-const (
-	NEUTRAL Class = "NEUTRAL"
-	DRUID Class = "DRUID"
-	HUNTER Class = "HUNTER"
-	MAGE Class = "MAGE"
-	PALADIN Class = "PALADIN"
-	PRIEST Class = "PRIEST"
-	ROGUE Class = "ROGUE"
-	SHAMAN Class = "SHAMAN"
-	WARLOCK Class = "WARLOCK"
-	WARRIOR Class = "WARRIOR"
-)
 
 const (
 	deckSize = 30
@@ -63,13 +19,7 @@ const (
 	dbPath = "./database.json"
 )
 
-var (
-	ErrDownloadFailed = errors.New("database download failed")
-	ErrDatabaseWrite  = errors.New("database write failed")
-	ErrDatabaseRead = errors.New("database read failed")
-	ErrCardNotFound = errors.New("card not found")
-	ErrInvalidDeck = errors.New("deck invalid")
-)
+
 
 
 func stripCard(card CardAPI) CardStripped{
@@ -188,5 +138,22 @@ func Validate(deck hsdeckoder.Deck) (Class, error){
 	return class, nil
 }
 
+
+func Parse(deck hsdeckoder.Deck) (ParsedDeck, error){
+	var parsedDeck ParsedDeck
+	for _, card := range deck.Cards{
+		strippedCard, err := getCard(card.Id)
+		if err != nil{
+			return ParsedDeck{}, err
+		}
+		parsedCard := ParsedCard{
+			Id:    strippedCard.Id,
+			Name:  strippedCard.Name,
+			Count: card.Count,
+		}
+		parsedDeck.Cards = append(parsedDeck.Cards, parsedCard)
+	}
+	return parsedDeck, nil
+}
 
 
