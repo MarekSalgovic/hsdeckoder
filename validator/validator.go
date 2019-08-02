@@ -16,21 +16,21 @@ const (
 )
 
 type Validator interface {
-	Validate(deck hsdeckoder.Deck) (ParsedDeck, error)
+	ValidateDeck(deck hsdeckoder.Deck) (ParsedDeck, error)
 	getCard(dbfId int) (CardStripped, error)
 	getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error)
 }
 
-type Valid struct {
+type Validate struct {
 	Cards []CardStripped
 }
 
-func NewValidator() (Valid, error) {
+func NewValidator() (Validate, error) {
 	cards, err := downloadDB()
 	if err != nil {
-		return Valid{}, err
+		return Validate{}, err
 	}
-	return Valid{
+	return Validate{
 		Cards: cards,
 	}, nil
 }
@@ -89,7 +89,7 @@ func readDB() ([]CardStripped, error) {
 }
 */
 
-func (v *Valid) getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error) {
+func (v *Validate) getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error) {
 	heroCard, err := v.getCard(deck.Heroes[0])
 	if err != nil {
 		return hsdeckoder.Class(""), err
@@ -108,7 +108,7 @@ func (v *Valid) getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error) {
 
 }
 
-func (v *Valid) getCard(dbfId int) (CardStripped, error) {
+func (v *Validate) getCard(dbfId int) (CardStripped, error) {
 	for _, card := range v.Cards {
 		if card.DbfId == dbfId {
 			return card, nil
@@ -117,7 +117,7 @@ func (v *Valid) getCard(dbfId int) (CardStripped, error) {
 	return CardStripped{}, ErrCardNotFound
 }
 
-func (v *Valid) Validate(deck hsdeckoder.Deck) (ParsedDeck, error) {
+func (v *Validate) ValidateDeck(deck hsdeckoder.Deck) (ParsedDeck, error) {
 	var parsedDeck ParsedDeck
 	if len(deck.Heroes) != 1 {
 		return ParsedDeck{}, ErrInvalidDeck
