@@ -25,12 +25,12 @@ type Validate struct {
 	Cards []CardStripped
 }
 
-func NewValidator() (Validate, error) {
+func NewValidator() (*Validate, error) {
 	cards, err := downloadDB()
 	if err != nil {
-		return Validate{}, err
+		return &Validate{}, err
 	}
-	return Validate{
+	return &Validate{
 		Cards: cards,
 	}, nil
 }
