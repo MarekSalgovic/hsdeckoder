@@ -7,40 +7,37 @@ type CardAPI struct {
 	DbfId       int      `json:"dbfId"`
 	Name        string   `json:"name"`
 	Text        string   `json:"text"`
-	Flavor      string	 `json:"flavor"`
+	Flavor      string   `json:"flavor"`
 	Artist      string   `json:"artist"`
-	Attack      int  	 `json:"attack"`
+	Attack      int      `json:"attack"`
 	CardClass   string   `json:"cardClass"`
-	Collectible bool  	 `json:"collectible"`
+	Collectible bool     `json:"collectible"`
 	Cost        int      `json:"cost"`
 	Elite       bool     `json:"elite"`
 	Faction     string   `json:"faction"`
 	Health      int      `json:"health"`
 	Mechanics   []string `json:"mechanics"`
-	Rarity		string	 `json:"rarity"`
-	Set			string	 `json:"set"`
-	Type		string	 `json:"type"`
+	Rarity      string   `json:"rarity"`
+	Set         string   `json:"set"`
+	Type        string   `json:"type"`
 }
 
 type CardStripped struct {
-	Id          string   `json:"id"`
-	DbfId       int      `json:"dbfId"`
-	Name        string   `json:"name"`
-	CardClass   hsdeckoder.Class    `json:"cardClass"`
-	Cost        int      `json:"cost"`
+	Id        string           `json:"id"`
+	DbfId     int              `json:"dbfId"`
+	Name      string           `json:"name"`
+	CardClass hsdeckoder.Class `json:"cardClass"`
+	Cost      int              `json:"cost"`
 }
 
-
-type ParsedDeck struct{
+type ParsedDeck struct {
 	Class hsdeckoder.Class
 	Cards []ParsedCard `json:"card"`
 }
 
-type ParsedCard struct{
-	Id string `json:"id"`
-	Name string `json:"name"`
-	Count int `json:"count"`
-	Cost int `json:"cost"`
+type ParsedCard struct {
+	Id    string `json:"id"`
+	Name  string `json:"name"`
+	Count int    `json:"count"`
+	Cost  int    `json:"cost"`
 }
-
-

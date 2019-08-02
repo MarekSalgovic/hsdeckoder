@@ -5,10 +5,7 @@ import (
 	"github.com/MarekSalgovic/hsdeckoder"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
-
-
 
 const (
 	deckSize = 30
@@ -16,54 +13,61 @@ const (
 
 const (
 	apiURL = "https://api.hearthstonejson.com/v1/31532/enUS/cards.json"
-	dbPath = "./database.json"
 )
 
-
-
-
-func stripCard(card CardAPI) CardStripped{
-	return CardStripped{
-		Id:        card.Id,
-		DbfId:     card.DbfId,
-		Name:      card.Name,
-		CardClass: hsdeckoder.Class(card.CardClass),
-		Cost:      card.Cost,
-	}
+type Validator interface {
+	Validate(deck hsdeckoder.Deck) (ParsedDeck, error)
+	getCard(dbfId int) (CardStripped, error)
+	getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error)
 }
 
+type Valid struct {
+	Cards []CardStripped
+}
+
+func NewValidator() (Valid, error) {
+	cards, err := downloadDB()
+	if err != nil {
+		return Valid{}, err
+	}
+	return Valid{
+		Cards: cards,
+	}, nil
+}
 
 func downloadDB() ([]CardStripped, error) {
 	var cards []CardStripped
 	res, err := http.Get(apiURL)
-	if err != nil{
+	if err != nil {
 		return cards, ErrDownloadFailed
 	}
 	resData, err := ioutil.ReadAll(res.Body)
-	if err != nil{
+	if err != nil {
 		return cards, ErrDownloadFailed
 	}
 
-	err = json.Unmarshal(resData,&cards)
-	if err != nil{
+	err = json.Unmarshal(resData, &cards)
+	if err != nil {
 		return cards, ErrDownloadFailed
 	}
-	file, err := json.MarshalIndent(cards,"","  ")
-	if err != nil{
+	/*
+	file, err := json.MarshalIndent(cards, "", "  ")
+	if err != nil {
 		return cards, ErrDatabaseWrite
 	}
-	err = ioutil.WriteFile(dbPath,file,0644)
-	if err != nil{
+	err = ioutil.WriteFile(dbPath, file, 0644)
+	if err != nil {
 		return cards, ErrDatabaseWrite
-	}
+	}*/
 	return cards, nil
 }
 
-func readDB() ([]CardStripped, error){
+/*
+func readDB() ([]CardStripped, error) {
 	var cards []CardStripped
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		cards, err = downloadDB()
-		if err != nil{
+		if err != nil {
 			return cards, err
 		}
 		return cards, nil
@@ -81,24 +85,22 @@ func readDB() ([]CardStripped, error){
 	if err != nil {
 		return cards, ErrDatabaseRead
 	}
-	return cards,nil
+	return cards, nil
 }
+*/
 
-
-
-
-func getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error){
-	heroCard, err := getCard(deck.Heroes[0])
-	if err != nil{
+func (v *Valid) getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error) {
+	heroCard, err := v.getCard(deck.Heroes[0])
+	if err != nil {
 		return hsdeckoder.Class(""), err
 	}
 	class := heroCard.CardClass
-	for _, id := range deck.Cards{
-		card, err := getCard(id.Id)
-		if err != nil{
+	for _, id := range deck.Cards {
+		card, err := v.getCard(id.Id)
+		if err != nil {
 			return hsdeckoder.Class(""), err
 		}
-		if card.CardClass != hsdeckoder.NEUTRAL && card.CardClass != class{
+		if card.CardClass != hsdeckoder.NEUTRAL && card.CardClass != class {
 			return hsdeckoder.Class(""), ErrInvalidDeck
 		}
 	}
@@ -106,49 +108,42 @@ func getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error){
 
 }
 
-func getCard(dbfId int) (CardStripped, error){
-	cards, err := readDB()
-	if err != nil{
-		return CardStripped{}, nil
-	}
-	for _, card := range cards{
-		if card.DbfId == dbfId{
+func (v *Valid) getCard(dbfId int) (CardStripped, error) {
+	for _, card := range v.Cards {
+		if card.DbfId == dbfId {
 			return card, nil
 		}
 	}
 	return CardStripped{}, ErrCardNotFound
 }
 
-
-func Validate(deck hsdeckoder.Deck) (ParsedDeck, error){
+func (v *Valid) Validate(deck hsdeckoder.Deck) (ParsedDeck, error) {
 	var parsedDeck ParsedDeck
-	if len(deck.Heroes) != 1{
+	if len(deck.Heroes) != 1 {
 		return ParsedDeck{}, ErrInvalidDeck
 	}
-	class, err := getClass(deck)
-	if err != nil{
+	class, err := v.getClass(deck)
+	if err != nil {
 		return ParsedDeck{}, err
 	}
 	parsedDeck.Class = class
 	var cardCount int
-	for _, card := range deck.Cards{
+	for _, card := range deck.Cards {
 		cardCount += card.Count
-		strippedCard, err := getCard(card.Id)
-		if err != nil{
+		strippedCard, err := v.getCard(card.Id)
+		if err != nil {
 			return ParsedDeck{}, err
 		}
 		parsedCard := ParsedCard{
 			Id:    strippedCard.Id,
 			Name:  strippedCard.Name,
 			Count: card.Count,
-			Cost: strippedCard.Cost,
+			Cost:  strippedCard.Cost,
 		}
 		parsedDeck.Cards = append(parsedDeck.Cards, parsedCard)
 	}
-	if cardCount != deckSize{
+	if cardCount != deckSize {
 		return ParsedDeck{}, ErrInvalidDeck
 	}
 	return parsedDeck, nil
 }
-
-
