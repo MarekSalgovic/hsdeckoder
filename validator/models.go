@@ -31,8 +31,8 @@ type CardStripped struct {
 }
 
 type ParsedDeck struct {
-	Class hsdeckoder.Class
-	Cards []ParsedCard `json:"card"`
+	Class hsdeckoder.Class `json:"class"`
+	Cards []ParsedCard     `json:"card"`
 }
 
 type ParsedCard struct {
