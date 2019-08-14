@@ -39,16 +39,16 @@ func downloadDB() ([]CardStripped, error) {
 	var cards []CardStripped
 	res, err := http.Get(apiURL)
 	if err != nil {
-		return cards, ErrDownloadFailed
+		return cards, err
 	}
 	resData, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return cards, ErrDownloadFailed
+		return cards, err
 	}
 
 	err = json.Unmarshal(resData, &cards)
 	if err != nil {
-		return cards, ErrDownloadFailed
+		return cards, err
 	}
 	/*
 		file, err := json.MarshalIndent(cards, "", "  ")
