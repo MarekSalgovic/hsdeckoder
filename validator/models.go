@@ -37,8 +37,9 @@ type ParsedDeck struct {
 }
 
 type ParsedCard struct {
-	Id    string `json:"id"`
-	Name  string `json:"name"`
-	Count int    `json:"count"`
-	Cost  int    `json:"cost"`
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Count  int    `json:"count"`
+	Cost   int    `json:"cost"`
+	Rarity string `json:"rarity"`
 }

@@ -51,14 +51,14 @@ func downloadDB() ([]CardStripped, error) {
 		return cards, ErrDownloadFailed
 	}
 	/*
-	file, err := json.MarshalIndent(cards, "", "  ")
-	if err != nil {
-		return cards, ErrDatabaseWrite
-	}
-	err = ioutil.WriteFile(dbPath, file, 0644)
-	if err != nil {
-		return cards, ErrDatabaseWrite
-	}*/
+		file, err := json.MarshalIndent(cards, "", "  ")
+		if err != nil {
+			return cards, ErrDatabaseWrite
+		}
+		err = ioutil.WriteFile(dbPath, file, 0644)
+		if err != nil {
+			return cards, ErrDatabaseWrite
+		}*/
 	return cards, nil
 }
 
@@ -135,10 +135,11 @@ func (v *Validate) ValidateDeck(deck hsdeckoder.Deck) (ParsedDeck, error) {
 			return ParsedDeck{}, err
 		}
 		parsedCard := ParsedCard{
-			Id:    strippedCard.Id,
-			Name:  strippedCard.Name,
-			Count: card.Count,
-			Cost:  strippedCard.Cost,
+			Id:     strippedCard.Id,
+			Name:   strippedCard.Name,
+			Count:  card.Count,
+			Cost:   strippedCard.Cost,
+			Rarity: strippedCard.Rarity,
 		}
 		parsedDeck.Cards = append(parsedDeck.Cards, parsedCard)
 	}
