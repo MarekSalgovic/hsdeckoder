@@ -12,7 +12,7 @@ const (
 )
 
 const (
-	apiURL = "https://api.hearthstonejson.com/v1/31532/enUS/cards.json"
+	apiURL = "https://api.hearthstonejson.com/v1/latest/enUS/cards.json"
 )
 
 type Validator interface {
