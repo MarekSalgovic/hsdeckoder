@@ -28,6 +28,7 @@ type CardStripped struct {
 	Name      string           `json:"name"`
 	CardClass hsdeckoder.Class `json:"cardClass"`
 	Cost      int              `json:"cost"`
+	Rarity    string           `json:"rarity"`
 }
 
 type ParsedDeck struct {
