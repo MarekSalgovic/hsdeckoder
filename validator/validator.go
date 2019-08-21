@@ -50,44 +50,9 @@ func downloadDB() ([]CardStripped, error) {
 	if err != nil {
 		return cards, err
 	}
-	/*
-		file, err := json.MarshalIndent(cards, "", "  ")
-		if err != nil {
-			return cards, ErrDatabaseWrite
-		}
-		err = ioutil.WriteFile(dbPath, file, 0644)
-		if err != nil {
-			return cards, ErrDatabaseWrite
-		}*/
 	return cards, nil
 }
 
-/*
-func readDB() ([]CardStripped, error) {
-	var cards []CardStripped
-	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-		cards, err = downloadDB()
-		if err != nil {
-			return cards, err
-		}
-		return cards, nil
-	}
-	jsonFile, err := os.Open(dbPath)
-	if err != nil {
-		return cards, ErrDatabaseRead
-	}
-	defer jsonFile.Close()
-	bs, err := ioutil.ReadAll(jsonFile)
-	if err != nil {
-		return cards, ErrDatabaseRead
-	}
-	err = json.Unmarshal(bs, &cards)
-	if err != nil {
-		return cards, ErrDatabaseRead
-	}
-	return cards, nil
-}
-*/
 
 func (v *Validate) getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error) {
 	heroCard, err := v.getCard(deck.Heroes[0])
