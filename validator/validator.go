@@ -17,12 +17,12 @@ const (
 
 type Validator interface {
 	ValidateDeck(deck hsdeckoder.Deck) (ParsedDeck, error)
-	getCard(dbfId int) (CardStripped, error)
+	getCard(dbfId int) (CardAPI, error)
 	getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error)
 }
 
 type Validate struct {
-	Cards []CardStripped
+	Cards []CardAPI
 }
 
 func NewValidator() (*Validate, error) {
@@ -35,8 +35,8 @@ func NewValidator() (*Validate, error) {
 	}, nil
 }
 
-func downloadDB() ([]CardStripped, error) {
-	var cards []CardStripped
+func downloadDB() ([]CardAPI, error) {
+	var cards []CardAPI
 	res, err := http.Get(apiURL)
 	if err != nil {
 		return cards, err
@@ -73,13 +73,13 @@ func (v *Validate) getClass(deck hsdeckoder.Deck) (hsdeckoder.Class, error) {
 
 }
 
-func (v *Validate) getCard(dbfId int) (CardStripped, error) {
+func (v *Validate) getCard(dbfId int) (CardAPI, error) {
 	for _, card := range v.Cards {
 		if card.DbfId == dbfId {
 			return card, nil
 		}
 	}
-	return CardStripped{}, ErrCardNotFound
+	return CardAPI{}, ErrCardNotFound
 }
 
 func (v *Validate) ValidateDeck(deck hsdeckoder.Deck) (ParsedDeck, error) {
@@ -95,18 +95,11 @@ func (v *Validate) ValidateDeck(deck hsdeckoder.Deck) (ParsedDeck, error) {
 	var cardCount int
 	for _, card := range deck.Cards {
 		cardCount += card.Count
-		strippedCard, err := v.getCard(card.Id)
+		cardAPI, err := v.getCard(card.Id)
 		if err != nil {
 			return ParsedDeck{}, err
 		}
-		parsedCard := ParsedCard{
-			Id:     strippedCard.Id,
-			Name:   strippedCard.Name,
-			Count:  card.Count,
-			Cost:   strippedCard.Cost,
-			Rarity: strippedCard.Rarity,
-		}
-		parsedDeck.Cards = append(parsedDeck.Cards, parsedCard)
+		parsedDeck.Cards = append(parsedDeck.Cards, cardAPI)
 	}
 	if cardCount != deckSize {
 		return ParsedDeck{}, ErrInvalidDeck

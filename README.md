@@ -1,4 +1,4 @@
-# Hearthstone deckcode decoder - hsdeckoder
+# Hearthstone Deckcode Decoder - hsdeckoder
 
 Golang package to decode hearthstone deckstring to useful data inspired by [hearthsim](https://hearthsim.info/docs/deckstrings/).
 
