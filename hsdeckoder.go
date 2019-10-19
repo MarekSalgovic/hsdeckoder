@@ -52,7 +52,7 @@ func parseHeader(bs []byte) ([]byte, Format, error) {
 func parseNCopyCards(bs []byte) ([]byte, []Card, error) {
 	byteRemainder := len(bs)
 	var cards []Card
-	for byteRemainder<=0{
+	for byteRemainder>0{
 		cardId, c := binary.Uvarint(bs)
 		if cardId == 0 && c <= 0 {
 			return bs, []Card{}, ErrInvalidCode
