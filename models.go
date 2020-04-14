@@ -1,18 +1,14 @@
 package hsdeckoder
 
-
-
-
 type Card struct {
-	Id int
+	Id    int
 	Count int
 }
 
-
 type Deck struct {
-	Format	Format
-	Heroes	[]int
-	Cards 	[]Card
+	Format Format
+	Heroes []int
+	Cards  []Card
 }
 
 type Format int
@@ -26,14 +22,15 @@ const (
 type Class string
 
 const (
-	NEUTRAL Class = "NEUTRAL"
-	DRUID Class = "DRUID"
-	HUNTER Class = "HUNTER"
-	MAGE Class = "MAGE"
-	PALADIN Class = "PALADIN"
-	PRIEST Class = "PRIEST"
-	ROGUE Class = "ROGUE"
-	SHAMAN Class = "SHAMAN"
-	WARLOCK Class = "WARLOCK"
-	WARRIOR Class = "WARRIOR"
+	NEUTRAL     Class = "NEUTRAL"
+	DRUID       Class = "DRUID"
+	HUNTER      Class = "HUNTER"
+	MAGE        Class = "MAGE"
+	PALADIN     Class = "PALADIN"
+	PRIEST      Class = "PRIEST"
+	ROGUE       Class = "ROGUE"
+	SHAMAN      Class = "SHAMAN"
+	WARLOCK     Class = "WARLOCK"
+	WARRIOR     Class = "WARRIOR"
+	DEMONHUNTER Class = "DEMONHUNTER"
 )

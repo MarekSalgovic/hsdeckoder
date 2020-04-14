@@ -6,13 +6,9 @@ import (
 	"errors"
 )
 
-
-
 var (
 	ErrInvalidCode = errors.New("deckcode invalid")
 )
-
-
 
 func parseHeader(bs []byte) ([]byte, Format, error) {
 
@@ -48,11 +44,12 @@ func parseHeader(bs []byte) ([]byte, Format, error) {
 	return bs, Format(format), nil
 }
 
-
 func parseNCopyCards(bs []byte) ([]byte, []Card, error) {
+
 	byteRemainder := len(bs)
+
 	var cards []Card
-	for byteRemainder>0{
+	for byteRemainder > 0 {
 		cardId, c := binary.Uvarint(bs)
 		if cardId == 0 && c <= 0 {
 			return bs, []Card{}, ErrInvalidCode
@@ -68,9 +65,7 @@ func parseNCopyCards(bs []byte) ([]byte, []Card, error) {
 
 }
 
-
-
-func parseBodyHelper(bs []byte, count int) ([]byte, []Card, error){
+func parseBodyHelper(bs []byte, count int) ([]byte, []Card, error) {
 	var cards []Card
 	uniqueCount, c := binary.Uvarint(bs)
 	if uniqueCount == 0 && c <= 0 {
@@ -88,31 +83,30 @@ func parseBodyHelper(bs []byte, count int) ([]byte, []Card, error){
 	return bs, cards, nil
 }
 
-
 func parseBody(bs []byte, d Deck) (Deck, error) {
 
-	bs, heroCopy, err := parseBodyHelper(bs,0)
+	bs, heroCopy, err := parseBodyHelper(bs, 0)
 
-	if err != nil{
-		return Deck{},ErrInvalidCode
+	if err != nil {
+		return Deck{}, ErrInvalidCode
 	}
 
 	bs, singleCopy, err := parseBodyHelper(bs, 1)
-	if err != nil{
-		return Deck{},ErrInvalidCode
+	if err != nil {
+		return Deck{}, ErrInvalidCode
 	}
-	bs, doubleCopy, err := parseBodyHelper(bs,2)
+	bs, doubleCopy, err := parseBodyHelper(bs, 2)
 
-	if err != nil{
-		return Deck{},ErrInvalidCode
+	if err != nil {
+		return Deck{}, ErrInvalidCode
 	}
 	bs, nCopy, err := parseNCopyCards(bs)
 
-	if err != nil{
-		return Deck{},ErrInvalidCode
+	if err != nil {
+		return Deck{}, ErrInvalidCode
 	}
 	var heroes []int
-	for _, hero:= range heroCopy{
+	for _, hero := range heroCopy {
 		heroes = append(heroes, hero.Id)
 	}
 
@@ -140,9 +134,10 @@ func Decode(dc string) (Deck, error) {
 	if err != nil {
 		return Deck{}, nil
 	}
-
+	for i, v := range deck.Cards {
+		if v.Count == 0 {
+			deck.Cards = append(deck.Cards[:i], deck.Cards[i+1:]...)
+		}
+	}
 	return deck, nil
 }
-
-
-
